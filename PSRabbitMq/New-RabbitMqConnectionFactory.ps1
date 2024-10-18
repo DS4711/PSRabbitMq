@@ -67,19 +67,17 @@
         $Factory = New-Object RabbitMQ.Client.ConnectionFactory
         
         #Add the hostname
-        $HostNameProp = [RabbitMQ.Client.ConnectionFactory].GetField("HostName")
-        $HostNameProp.SetValue($Factory, $ComputerName)
+        $Factory.HostName = $ComputerName
 
-        $TcpPortProp = [RabbitMQ.Client.ConnectionFactory].GetField("Port")
         if ( $PSBoundParameters.ContainsKey('Ssl') -and 
              $Ssl -ne [Security.Authentication.SslProtocols]::None -and
              !$PSBoundParameters.ContainsKey('Port')
             )
         {
-            $TcpPortProp.SetValue($Factory, 5671)
+           $Factory.Port = 5671
         }
         else {
-            $TcpPortProp.SetValue($Factory, $Port)
+            $Factory.Port = $Port
         }
 
         $SslOptionsParams = @{}
@@ -97,8 +95,7 @@
         Write-Progress -id 10 -Activity 'Create SCMB Connection' -Status 'Building connection' -PercentComplete 45
 
         if($vhost) {
-            $vhostProp = [RabbitMQ.Client.ConnectionFactory].GetProperty("VirtualHost")
-            $vhostProp.SetValue($Factory, $vhost)
+            $Factory.VirtualHost = $vhost
         }
     
         #Add cred and SSL info
