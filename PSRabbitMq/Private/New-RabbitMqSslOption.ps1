@@ -52,12 +52,10 @@
             $PSCmdlet.ThrowTerminatingError($_)
 
         }
-
-        $FactoryAuthMechanisms = [RabbitMQ.Client.ConnectionFactory].GetField("AuthMechanisms")
         
         [RabbitMQ.Client.ExternalMechanismFactory]$ExternalAuthObject = New-Object RabbitMQ.Client.ExternalMechanismFactory
         [RabbitMQ.Client.AuthMechanismFactory[]]$AuthMechanismArray = @($ExternalAuthObject)
-        $FactoryAuthMechanisms.SetValue($Factory, $AuthMechanismArray)
+        $Factory.AuthMechanisms = $AuthMechanismArray
         $SslOption.CertPath = $CertPath
         $SslOption.CertPassphrase = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($CertPassphrase))
 
@@ -74,8 +72,7 @@
     #Add to factory, or return SslOption
     if($Factory)
     {
-        $SslProp = [RabbitMQ.Client.ConnectionFactory].GetField("Ssl")
-        $SslProp.SetValue($Factory, $SslOption)
+        $Factory.Ssl = $SslOption
     }
 
     else
